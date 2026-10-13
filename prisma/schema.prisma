@@ -89,23 +89,42 @@ model User {
 }
 
 model Service {
-  id              String    @id @default(cuid())
-  title           String
-  slug            String    @unique
-  shortDescription String
-  description     String    @db.Text
-  category        String
-  features        String[]
-  icon            String    @default("Code2")
-  isActive        Boolean   @default(true)
-  sortOrder       Int       @default(0)
-  seoTitle        String?
-  seoDescription  String?
-  inquiries       Inquiry[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                  String                    @id @default(cuid())
+  title               String
+  slug                String                    @unique
+  shortDescription    String
+  description         String                    @db.Text
+  category            String
+  businessProblems    String[]                  @default([])
+  features            String[]                  @default([])
+  deliverables        String[]                  @default([])
+  technologies        String[]                  @default([])
+  benefits            String[]                  @default([])
+  useCases            String[]                  @default([])
+  faqs                Json                      @default("[]")
+  icon                String                    @default("Code2")
+  coverImage          String?
+  deliveryEstimate    String?
+  priceType           PricingPriceType          @default(CUSTOM_QUOTE)
+  amount              Decimal?                  @db.Decimal(12, 2)
+  currency            CurrencyCode              @default(KES)
+  billingInterval     PricingBillingInterval?
+  pricingPlanId       String?
+  pricingPlan         PricingPlan?              @relation(fields: [pricingPlanId], references: [id], onDelete: SetNull)
+  relatedProjects     ServicePortfolioProject[]
+  status              ContentStatus             @default(PUBLISHED)
+  isActive            Boolean                   @default(true)
+  sortOrder           Int                       @default(0)
+  seoTitle            String?
+  seoDescription      String?
+  seoCanonicalUrl     String?
+  inquiries           Inquiry[]
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
 
   @@index([isActive, sortOrder])
+  @@index([category, status, sortOrder])
+  @@index([pricingPlanId])
 }
 
 model PricingCategory {
@@ -143,6 +162,7 @@ model PricingPlan {
   ctaLabel            String              @default("Choose plan")
   seoTitle            String?
   seoDescription      String?
+  services            Service[]
   quoteRequests       QuoteRequest[]
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
@@ -305,11 +325,22 @@ model BlogPost {
   publishedAt    DateTime?
   seoTitle       String?
   seoDescription String?
+  services       ServicePortfolioProject[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
   @@index([status, publishedAt])
   @@index([category, status])
+}
+
+model ServicePortfolioProject {
+  serviceId String
+  projectId String
+  service   Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  project   PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([serviceId, projectId])
+  @@index([projectId])
 }
 
 model Testimonial {
