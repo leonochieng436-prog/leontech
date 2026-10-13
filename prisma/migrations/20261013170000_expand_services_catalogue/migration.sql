@@ -26,6 +26,41 @@ END,
 "isActive" = true,
 "status" = 'PUBLISHED';
 
+UPDATE "Service" SET
+  "businessProblems" = CASE
+    WHEN "category" = 'Web Development' THEN ARRAY['The website does not clearly communicate the offer or guide visitors to a useful next step.', 'Slow, inaccessible, or difficult-to-update pages create friction for customers and staff.']::TEXT[]
+    WHEN "category" = 'Business Management Systems' THEN ARRAY['Stock, sales, staff, and customer records are scattered across tools.', 'Teams lack timely visibility into routine operations.']::TEXT[]
+    WHEN "category" = 'UI/UX and Product Design' THEN ARRAY['Users struggle to understand important product flows.', 'Teams are building without enough evidence about user needs.']::TEXT[]
+    WHEN "category" = 'Cloud, DevOps, AI and Application Security' THEN ARRAY['Releases are manual, environments are unreliable, or risk is difficult to assess.', 'Automation ideas lack clear controls and integration boundaries.']::TEXT[]
+    WHEN "category" = 'Digital Marketing, Maintenance and Technical Support' THEN ARRAY['A digital presence is not being maintained or measured consistently.', 'Small technical issues and updates accumulate without a clear owner.']::TEXT[]
+    ELSE ARRAY['Manual work and disconnected tools make important processes hard to repeat.', 'Existing software no longer fits business rules or customer needs.']::TEXT[]
+  END,
+  "deliverables" = "features" || ARRAY['Implementation notes and handover guidance']::TEXT[],
+  "technologies" = CASE
+    WHEN "category" = 'Web Development' THEN ARRAY['Next.js', 'React', 'TypeScript', 'PostgreSQL or a project-appropriate CMS']::TEXT[]
+    WHEN "category" = 'Business Management Systems' THEN ARRAY['TypeScript', 'PostgreSQL', 'APIs and payment integrations selected for the project']::TEXT[]
+    WHEN "category" = 'UI/UX and Product Design' THEN ARRAY['Figma', 'Interactive prototypes', 'Accessibility and usability review methods']::TEXT[]
+    WHEN "category" = 'Cloud, DevOps, AI and Application Security' THEN ARRAY['Cloud platforms selected for the project', 'CI/CD tooling', 'Security testing tools']::TEXT[]
+    WHEN "category" = 'Digital Marketing, Maintenance and Technical Support' THEN ARRAY['Analytics platforms', 'Search tools', 'Monitoring and managed update workflows']::TEXT[]
+    ELSE ARRAY['TypeScript', 'Node.js', 'PostgreSQL', 'Cloud deployment selected for the project']::TEXT[]
+  END,
+  "benefits" = ARRAY['A solution shaped around real requirements.', 'A maintainable foundation with clear next steps.']::TEXT[],
+  "useCases" = CASE
+    WHEN "category" = 'Web Development' THEN ARRAY['Company and service websites', 'Campaign landing pages and online stores']::TEXT[]
+    WHEN "category" = 'Business Management Systems' THEN ARRAY['Retail and wholesale operations', 'Education, hospitality, and service businesses']::TEXT[]
+    WHEN "category" = 'UI/UX and Product Design' THEN ARRAY['New product discovery and prototyping', 'Usability improvements and design systems']::TEXT[]
+    WHEN "category" = 'Cloud, DevOps, AI and Application Security' THEN ARRAY['Cloud deployments and release pipelines', 'Security reviews and carefully scoped automation']::TEXT[]
+    WHEN "category" = 'Digital Marketing, Maintenance and Technical Support' THEN ARRAY['Ongoing website and application care', 'Search visibility and digital campaign support']::TEXT[]
+    ELSE ARRAY['Internal applications and customer portals', 'APIs, data platforms, and SaaS products']::TEXT[]
+  END,
+  "faqs" = jsonb_build_array(
+    jsonb_build_object('question', 'What is included in this service?', 'answer', 'The final scope is agreed together and confirmed in writing before work begins.'),
+    jsonb_build_object('question', 'How is the project price determined?', 'answer', 'Pricing depends on requirements, integrations, content, and delivery constraints. We confirm the scope and provide a written quotation before work begins.'),
+    jsonb_build_object('question', 'How long does delivery take?', 'answer', 'Timing depends on scope and review needs. We agree on a delivery plan after understanding your requirements.')
+  ),
+  "priceType" = 'CUSTOM_QUOTE',
+  "amount" = NULL;
+
 CREATE INDEX "Service_category_status_sortOrder_idx" ON "Service"("category", "status", "sortOrder");
 CREATE INDEX "Service_pricingPlanId_idx" ON "Service"("pricingPlanId");
 

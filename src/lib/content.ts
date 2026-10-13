@@ -8,6 +8,110 @@ export type Service = {
   features: string[];
 };
 
+export type ServiceFaq = { question: string; answer: string };
+
+export const SERVICE_CATEGORIES = [
+  "Web Development",
+  "Software Engineering",
+  "Business Management Systems",
+  "Mobile Application Development",
+  "UI/UX and Product Design",
+  "Cloud, DevOps, AI and Application Security",
+  "Digital Marketing, Maintenance and Technical Support",
+] as const;
+
+const serviceCategoryBySlug: Record<string, (typeof SERVICE_CATEGORIES)[number]> = {
+  "web-design-development": "Web Development",
+  ecommerce: "Web Development",
+  "business-websites": "Web Development",
+  "custom-software": "Software Engineering",
+  "saas-platforms": "Software Engineering",
+  "api-integrations": "Software Engineering",
+  "enterprise-software": "Software Engineering",
+  "database-design": "Software Engineering",
+  "business-systems": "Business Management Systems",
+  "point-of-sale": "Business Management Systems",
+  "inventory-management": "Business Management Systems",
+  "erp-crm-hr-payroll": "Business Management Systems",
+  "school-management": "Business Management Systems",
+  "hotel-management": "Business Management Systems",
+  "mobile-app-development": "Mobile Application Development",
+  "ui-ux-design": "UI/UX and Product Design",
+  "cloud-devops": "Cloud, DevOps, AI and Application Security",
+  "workflow-automation": "Cloud, DevOps, AI and Application Security",
+  "application-security-review": "Cloud, DevOps, AI and Application Security",
+  "security-support": "Digital Marketing, Maintenance and Technical Support",
+  "digital-marketing": "Digital Marketing, Maintenance and Technical Support",
+  "maintenance-support": "Digital Marketing, Maintenance and Technical Support",
+};
+
+export function getServiceCategory(slug: string, currentCategory: string) {
+  return serviceCategoryBySlug[slug] ?? (SERVICE_CATEGORIES.includes(currentCategory as (typeof SERVICE_CATEGORIES)[number]) ? currentCategory : "Software Engineering");
+}
+
+export function buildServiceSeedContent(service: Service) {
+  const category = getServiceCategory(service.slug, service.category);
+  const categoryContent: Record<(typeof SERVICE_CATEGORIES)[number], { problems: string[]; benefits: string[]; useCases: string[]; technologies: string[] }> = {
+    "Web Development": {
+      problems: ["The website does not clearly communicate the offer or guide visitors to a useful next step.", "Slow, inaccessible, or difficult-to-update pages create friction for customers and staff."],
+      benefits: ["A clearer customer journey across devices.", "A maintainable foundation for future content and growth."],
+      useCases: ["Company and service websites", "Campaign landing pages and online stores"],
+      technologies: ["Next.js", "React", "TypeScript", "PostgreSQL or a project-appropriate CMS"],
+    },
+    "Software Engineering": {
+      problems: ["Manual work and disconnected tools make important processes hard to repeat.", "Existing software no longer fits the business rules or customer experience."],
+      benefits: ["More consistent workflows and information.", "Software designed to evolve with real requirements."],
+      useCases: ["Internal applications and customer portals", "APIs, data platforms, and SaaS products"],
+      technologies: ["TypeScript", "Node.js", "PostgreSQL", "Cloud deployment selected for the project"],
+    },
+    "Business Management Systems": {
+      problems: ["Stock, sales, staff, and customer records are scattered across tools.", "Teams lack timely visibility into routine operations."],
+      benefits: ["More connected operational information.", "Fewer repeated manual steps and clearer reporting."],
+      useCases: ["Retail and wholesale operations", "Education, hospitality, and service businesses"],
+      technologies: ["TypeScript", "PostgreSQL", "APIs and payment integrations selected for the project"],
+    },
+    "Mobile Application Development": {
+      problems: ["Customers or staff need important workflows while away from a desktop.", "Mobile experiences are inconsistent or disconnected from business systems."],
+      benefits: ["Convenient access to the workflows people need.", "A shared product direction across mobile and backend systems."],
+      useCases: ["Customer self-service and commerce", "Field-team and operational apps"],
+      technologies: ["React Native", "TypeScript", "REST APIs", "PostgreSQL"],
+    },
+    "UI/UX and Product Design": {
+      problems: ["Users struggle to understand important product flows.", "Teams are building without enough evidence about user needs."],
+      benefits: ["Clearer, more usable product experiences.", "Validated decisions before investing in implementation."],
+      useCases: ["New product discovery and prototyping", "Usability improvements and design systems"],
+      technologies: ["Figma", "Interactive prototypes", "Accessibility and usability review methods"],
+    },
+    "Cloud, DevOps, AI and Application Security": {
+      problems: ["Releases are manual, environments are unreliable, or risk is difficult to assess.", "Automation or AI ideas lack clear controls and integration boundaries."],
+      benefits: ["More repeatable delivery and operational visibility.", "Security and human oversight considered as part of implementation."],
+      useCases: ["Cloud deployments and release pipelines", "Security reviews and carefully scoped automation"],
+      technologies: ["Cloud platforms selected for the project", "CI/CD tooling", "TypeScript", "Security testing tools"],
+    },
+    "Digital Marketing, Maintenance and Technical Support": {
+      problems: ["A digital presence is not being maintained or measured consistently.", "Small technical issues and updates accumulate without a clear owner."],
+      benefits: ["More dependable digital operations.", "A practical path for ongoing improvements."],
+      useCases: ["Ongoing website and application care", "Search visibility and digital campaign support"],
+      technologies: ["Analytics platforms", "Search tools", "Monitoring and managed update workflows"],
+    },
+  };
+  const detail = categoryContent[category];
+
+  return {
+    category,
+    businessProblems: detail.problems,
+    deliverables: [...service.features, "Implementation notes and handover guidance"],
+    technologies: detail.technologies,
+    benefits: detail.benefits,
+    useCases: detail.useCases,
+    faqs: [
+      { question: `What is included in ${service.title}?`, answer: `The final scope is agreed together. Typical work includes discovery, the relevant ${category.toLowerCase()} deliverables, testing, and a clear handover.` },
+      { question: "How is the project price determined?", answer: "Pricing depends on requirements, integrations, content, and delivery constraints. We confirm scope and provide a written quotation before work begins." },
+      { question: "How long does delivery take?", answer: "Timing depends on scope and review needs. We agree on a delivery plan after understanding your requirements." },
+    ] satisfies ServiceFaq[],
+  };
+}
+
 export const services: Service[] = [
   { slug: "web-design-development", title: "Website Design & Development", category: "Web", summary: "Distinctive, high-performing websites that tell your story and move people to act.", description: "From the first conversation to launch day, we create fast, accessible websites built around the people you want to reach. Clear content, considered design, and a flexible foundation make your site a useful part of your business—not just a digital brochure.", icon: "Code2", features: ["Business and marketing websites", "Landing pages and campaign sites", "Responsive, accessible frontends", "Content management and SEO foundations"] },
   { slug: "ecommerce", title: "E-commerce Development", category: "Commerce", summary: "Thoughtful online storefronts that make buying easy and running your shop easier.", description: "We build commerce experiences that bring products to life and support the work behind every order—from product discovery through fulfillment and reporting.", icon: "ShoppingBag", features: ["Product catalog and search", "Checkout and payment integrations", "Inventory and order workflows", "Storefront analytics"] },
@@ -27,6 +131,10 @@ export const services: Service[] = [
   { slug: "hotel-management", title: "Hotel & Hospitality Management Systems", category: "Business Systems", summary: "Support reservations, guest communication, and hospitality operations.", description: "We build and integrate practical hospitality software that helps teams coordinate bookings and day-to-day operations while supporting a welcoming guest experience.", icon: "Hotel", features: ["Reservation and booking workflows", "Guest communication tools", "Operations and room-status views", "Hospitality integrations"] },
   { slug: "database-design", title: "Database Design & Development", category: "Engineering", summary: "A reliable data foundation for the applications and workflows you depend on.", description: "We model information around real business rules, build reliable database structures, and plan migrations with care for existing data and connected systems.", icon: "Database", features: ["Data modeling and schema design", "PostgreSQL and relational databases", "Data migration planning", "Performance and integrity reviews"] },
   { slug: "workflow-automation", title: "Workflow Automation & AI Integration", category: "Automation", summary: "Reduce repetitive work with responsible, well-integrated automation.", description: "We identify suitable repetitive tasks, connect existing tools, and explore carefully scoped AI features with human oversight and clear expectations.", icon: "Workflow", features: ["Workflow mapping and automation", "Business system integrations", "Carefully scoped AI features", "Human review and operational safeguards"] },
+  { slug: "mobile-app-development", title: "Mobile Application Development", category: "Mobile", summary: "Useful mobile experiences that connect customers and teams to the services they need.", description: "We plan and build mobile applications around real user needs, with secure connections to the services and data that power the product.", icon: "Smartphone", features: ["Mobile product discovery and scope", "Cross-platform iOS and Android applications", "Account, notification, and API integration", "Testing, release preparation, and handover"] },
+  { slug: "application-security-review", title: "Application Security Review", category: "Security", summary: "Identify practical security improvements across your application and delivery process.", description: "We review agreed application components and workflows, prioritize actionable findings, and help teams plan improvements. The scope and testing boundaries are agreed in writing before any assessment.", icon: "ShieldCheck", features: ["Application and dependency review", "Risk-prioritized findings", "Secure configuration recommendations", "Remediation planning and retest options"] },
+  { slug: "digital-marketing", title: "Digital Marketing and Search Visibility", category: "Marketing", summary: "Make it easier for the right people to find and understand your business online.", description: "We help shape practical digital visibility work around your goals, from analytics foundations and search improvements to campaign landing pages and measurement.", icon: "Megaphone", features: ["Search visibility and on-page review", "Analytics and conversion measurement setup", "Campaign landing page support", "Content and performance recommendations"] },
+  { slug: "maintenance-support", title: "Website Maintenance and Technical Support", category: "Support", summary: "Keep your website and digital tools updated, monitored, and ready for what comes next.", description: "Ongoing technical care can include agreed maintenance, issue triage, dependency updates, monitoring, and a prioritized improvement plan.", icon: "Wrench", features: ["Routine maintenance and updates", "Issue triage and technical support", "Health and performance checks", "Improvement planning and handover notes"] },
 ];
 
 export type Solution = { slug: string; title: string; summary: string; detail: string; icon: string };
