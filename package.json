@@ -1,0 +1,45 @@
+{
+  "name": "leon-tech",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "admin:bootstrap": "tsx scripts/bootstrap-admin.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.12.0",
+    "bcryptjs": "^3.0.3",
+    "lucide-react": "^1.55.0",
+    "next": "16.4.0",
+    "next-auth": "^5.0.0-beta.32",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prisma": "6.12.0",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.23.0",
+    "typescript-eslint": "^8.71.1",
+    "typescript": "^5.0.0"
+  }
+}
