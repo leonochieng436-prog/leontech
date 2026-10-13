@@ -14,4 +14,10 @@ describe("role permissions", () => {
     assert.equal(can("EDITOR", "inquiries:read"), false);
     assert.equal(can("ADMIN", "inquiries:write"), true);
   });
+
+  it("limits service catalogue administration to administrators", () => {
+    assert.equal(can("SUPER_ADMIN", "services:write"), true);
+    assert.equal(can("ADMIN", "services:write"), true);
+    assert.equal(can("EDITOR", "services:write"), false);
+  });
 });

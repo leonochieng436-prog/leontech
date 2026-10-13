@@ -1,7 +1,7 @@
 import "server-only";
 import { ContentStatus, Prisma, type PricingBillingInterval, type PricingPriceType, type CurrencyCode } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { articles, buildServiceSeedContent, getServiceCategory, projects, services, type ServiceFaq } from "@/lib/content";
+import { articles, buildServiceSeedContent, projects, services, type ServiceFaq } from "@/lib/content";
 
 export type PublicService = (typeof services)[number] & {
   businessProblems: string[];
@@ -47,7 +47,12 @@ function mapSeedService(service: (typeof services)[number]): PublicService {
   return {
     ...service,
     category: details.category,
-    ...details,
+    businessProblems: details.businessProblems,
+    deliverables: details.deliverables,
+    technologies: details.technologies,
+    benefits: details.benefits,
+    useCases: details.useCases,
+    faqs: details.faqs,
     coverImage: null,
     deliveryEstimate: null,
     priceType: "CUSTOM_QUOTE",
@@ -88,10 +93,10 @@ function mapDatabaseService(item: {
   seoCanonicalUrl: string | null;
   relatedProjects: { project: { slug: string; title: string; summary: string; category: string } }[];
 }): PublicService {
-  const priceType = item.pricingPlan?.priceType ?? item.priceType;
-  const amount = item.pricingPlan?.amount?.toString() ?? item.amount?.toString() ?? null;
-  const currency = item.pricingPlan?.currency ?? item.currency;
-  const billingInterval = item.pricingPlan?.billingInterval ?? item.billingInterval;
+  const priceType = item.pricingPlan ? item.pricingPlan.priceType : item.priceType;
+  const amount = item.pricingPlan ? item.pricingPlan.amount?.toString() ?? null : item.amount?.toString() ?? null;
+  const currency = item.pricingPlan ? item.pricingPlan.currency : item.currency;
+  const billingInterval = item.pricingPlan ? item.pricingPlan.billingInterval : item.billingInterval;
 
   return {
     slug: item.slug,
@@ -159,7 +164,9 @@ export async function getPublicServices(): Promise<PublicService[]> {
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
       select: publicServiceSelect,
     });
-    return items.length ? items.map(mapDatabaseService) : services.map(mapSeedService);
+    if (items.length) return items.map(mapDatabaseService);
+    const catalogueSize = await prisma.service.count();
+    return catalogueSize === 0 ? services.map(mapSeedService) : [];
   } catch (error) {
     console.warn("Falling back to seeded service content because the service catalogue could not be loaded:", error);
     return services.map(mapSeedService);
@@ -173,7 +180,9 @@ export async function getPublicService(slug: string): Promise<PublicService | nu
       where: { slug, isActive: true, status: ContentStatus.PUBLISHED },
       select: publicServiceSelect,
     });
-    return item ? mapDatabaseService(item) : null;
+    if (item) return mapDatabaseService(item);
+    const catalogueSize = await prisma.service.count();
+    return catalogueSize === 0 ? services.map(mapSeedService).find((service) => service.slug === slug) ?? null : null;
   } catch (error) {
     console.warn(`Falling back to seeded service content for ${slug}:`, error);
     return services.map(mapSeedService).find((service) => service.slug === slug) ?? null;

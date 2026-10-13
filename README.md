@@ -8,7 +8,7 @@ Leon.Tech is a responsive marketing website and a small, database-backed busines
 - Database-backed service, portfolio, and blog reads when `DATABASE_URL` is configured. With no database configured, the site uses clearly identified local service/portfolio/blog demo content so the public site can be previewed.
 - Contact form with server-side Zod validation, honeypot, PostgreSQL persistence, inquiry references, database-backed IP rate limiting, and optional Resend admin/client email notifications.
 - Auth.js credentials sign-in, bcrypt password hashes, short-lived JWT sessions, an initial-admin bootstrap command, role checks on server pages/actions, and database-checked active status and role on protected requests.
-- Admin overview, inquiry status management with an activity record, and service create/activate/deactivate management.
+- Admin overview, inquiry status management with an activity record, and service catalogue create/edit/publish/unpublish/archive/reorder management.
 - Robots, sitemap, page metadata, security headers, accessible mobile navigation, and a health endpoint.
 - Sample portfolio items are explicitly marked as concepts; no client names, testimonials, results, certifications, or business statistics are invented.
 
@@ -40,15 +40,15 @@ Leon.Tech is a responsive marketing website and a small, database-backed busines
    $bytes = New-Object byte[] 32; $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); [Convert]::ToBase64String($bytes); $rng.Dispose()
    ```
 
-3. Generate Prisma Client and create the initial database migration:
+3. Generate Prisma Client, apply database migrations, and seed the editable starter service catalogue:
 
    ```bash
    npm run db:generate
-   npm run db:migrate -- --name init
+   npm run db:deploy
    npm run db:seed
    ```
 
-   `DATABASE_URL` must point to a database you control. `db:migrate` is intended for local development; never use a destructive reset against production data.
+   `DATABASE_URL` must point to a database you control. To create a new migration during local development, use `npm run db:migrate -- --name <name>`; never use a destructive reset against production data.
 
 4. Set `ADMIN_NAME`, `ADMIN_EMAIL`, and a unique `ADMIN_PASSWORD` of at least 16 characters in `.env.local`, then create the first super-admin:
 
@@ -73,10 +73,10 @@ Leon.Tech is a responsive marketing website and a small, database-backed busines
 | `npm run db:generate` | Generate Prisma Client |
 | `npm run db:migrate -- --name <name>` | Create and apply a local development migration |
 | `npm run db:deploy` | Apply committed migrations in a deployment |
-| `npm run db:seed` | Idempotently create the starter service records |
+| `npm run db:seed` | Idempotently create the starter editable service records |
 | `npm run admin:bootstrap` | Create the first super-admin from environment values |
 
-The seed script adds service catalog entries only. It does not create fake client projects, testimonials, or outcome claims.
+The seed script adds service catalogue entries only and does not overwrite existing records on repeat runs. It does not create fake client projects, testimonials, or outcome claims.
 
 ## Environment variables
 
@@ -100,6 +100,8 @@ See `.env.example` for the complete list.
 - `RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_NOTIFICATION_EMAIL` — both administrator notification and client acknowledgement are sent when all three values are present. Email failures are logged safely and do not undo saved inquiries.
 - `WHATSAPP_BUSINESS_NUMBER` — international format, digits only; enables the prefilled WhatsApp link.
 - `CONTACT_EMAIL` — optional public contact email.
+
+The services module adds structured problems solved, features, deliverables, technologies, benefits, use cases, FAQs, images, delivery estimates, SEO metadata, publication state, prices, pricing-plan links, and related published portfolio projects. Seeded variable-scope services use custom-quote pricing unless an administrator enters an amount or links an active pricing plan. Public service filters/search and service-specific inquiry links use the published database catalogue.
 
 If email is not configured, the form still stores the inquiry and returns its reference. If the database itself is not configured, form submission is disabled with an explicit setup message and returns HTTP 503.
 
@@ -132,6 +134,7 @@ Set the WhatsApp business number in international digits-only format (for exampl
 
 - Credentials use bcrypt, Auth.js CSRF protections, database-backed login and inquiry rate-limit buckets, server-side Zod validation, and server-side role checks.
 - Administrator permissions are re-read from PostgreSQL for protected operations, so deactivating an account or changing its role invalidates prior authorization.
+- Service catalogue edits are restricted to administrator and super-administrator roles. Editors can still access the existing content-writing capabilities elsewhere but cannot manage services.
 - This initial implementation has inquiry and service administration, but not user administration, testimonial editing, rich-text/media editing, CSV export, inquiry notes/assignment, or portfolio/blog CRUD screens. Portfolio and blog records can be read publicly from PostgreSQL when published, but the corresponding write interfaces are not yet implemented.
 - Legal copy is draft content and must be reviewed for the business's actual practices and applicable law before launch.
 - The initial CSP permits inline scripts/styles needed by the current Next.js application. Review and tighten it for the exact production deployment and any added integrations.

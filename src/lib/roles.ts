@@ -6,12 +6,13 @@ export type Permission =
   | "inquiries:write"
   | "pricing:read"
   | "pricing:write"
+  | "services:write"
   | "users:manage"
   | "settings:manage";
 
 const permissions: Record<Role, ReadonlySet<Permission>> = {
-  SUPER_ADMIN: new Set(["content:read", "content:write", "inquiries:read", "inquiries:write", "pricing:read", "pricing:write", "users:manage", "settings:manage"]),
-  ADMIN: new Set(["content:read", "content:write", "inquiries:read", "inquiries:write", "pricing:read", "pricing:write", "settings:manage"]),
+  SUPER_ADMIN: new Set(["content:read", "content:write", "inquiries:read", "inquiries:write", "pricing:read", "pricing:write", "services:write", "users:manage", "settings:manage"]),
+  ADMIN: new Set(["content:read", "content:write", "inquiries:read", "inquiries:write", "pricing:read", "pricing:write", "services:write", "settings:manage"]),
   EDITOR: new Set(["content:read", "content:write"]),
 };
 
