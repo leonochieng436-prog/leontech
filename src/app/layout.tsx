@@ -43,7 +43,6 @@ export const metadata: Metadata = {
     title: "Web & Software Development Company in Kenya | Leon.Tech",
     description: "Business websites, e-commerce experiences, custom software, and management systems for teams in Nairobi and across Kenya.",
   },
-  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
