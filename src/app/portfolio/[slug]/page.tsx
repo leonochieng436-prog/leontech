@@ -13,7 +13,7 @@ export function generateStaticParams() { return projects.map(({ slug }) => ({ sl
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublicProject(slug);
-  if (!item) return {};
+  if (!item) return { title: "Page not found" };
   const isSample = !process.env.DATABASE_URL;
   return createPageMetadata({
     title: item.title,

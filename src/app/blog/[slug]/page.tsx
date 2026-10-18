@@ -13,7 +13,7 @@ export function generateStaticParams() { return articles.map(({ slug }) => ({ sl
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublicArticle(slug);
-  if (!item) return {};
+  if (!item) return { title: "Page not found" };
   const hasPublishedContent = Boolean(process.env.DATABASE_URL) && Boolean(item.content?.trim());
   return createPageMetadata({
     title: item.title,
