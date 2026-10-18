@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, GraduationCap, HeartPulse, Hotel, Rocket, Sparkles, Store, Truck } from "lucide-react";
 import { solutions } from "@/lib/content";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Solutions", description: "Digital products and business software for teams across retail, hospitality, education, and more." };
+export const metadata: Metadata = createPageMetadata({
+  title: "Business Software Solutions in Kenya",
+  description: "Explore practical web, software, and business system solutions for retail, hospitality, schools, professional services, healthcare administration, and logistics teams.",
+  path: "/solutions",
+});
 const icons = [Store, Sparkles, Hotel, GraduationCap, BriefcaseBusiness, HeartPulse, Truck, Rocket];
 
 export default function SolutionsPage() {

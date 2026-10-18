@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Mail, Menu, Phone, X } from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/app/admin/sign-out";
@@ -10,6 +10,7 @@ const publicLinks = [
   ["Services", "/services"],
   ["Solutions", "/solutions"],
   ["Work", "/portfolio"],
+  ["Pricing", "/pricing"],
   ["About", "/about"],
   ["Insights", "/blog"],
   ["Contact", "/contact"],
@@ -26,7 +27,7 @@ function isCurrentPage(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader() {
+export function SiteHeader({ email, phone }: { email: string; phone: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isAdmin = pathname.startsWith("/admin");
@@ -35,6 +36,7 @@ export function SiteHeader() {
 
   return (
     <header className={`site-header${isAdmin ? " admin-header" : ""}`}>
+      {!isAdmin && <div className="site-header-contact"><div className="container"><span>Nairobi, Kenya · Working everywhere</span><div><a href={`tel:${phone}`}><Phone size={12} />{phone}</a><a href={`mailto:${email}`}><Mail size={12} />{email}</a></div></div></div>}
       <div className="container nav-inner">
         <Link className="brand" href="/" aria-label="Leon.Tech home" onClick={() => setOpen(false)}>
           <span className="brand-mark">L.</span><span>Leon<span className="brand-dot">.</span>Tech</span>

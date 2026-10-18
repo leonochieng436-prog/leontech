@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, HeartHandshake, Lightbulb, ShieldCheck } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "About", description: "Learn about Leon.Tech's thoughtful approach to software, design, and business technology." };
+export const metadata: Metadata = createPageMetadata({
+  title: "About the Studio",
+  description: "Meet Leon.Tech, an independent digital studio based in Nairobi, Kenya, building practical websites, software, and business technology with teams.",
+  path: "/about",
+});
 
 const values = [
   { icon: Compass, title: "Start with purpose", text: "We ask better questions before we reach for technology. Clear goals help us build something that matters." },

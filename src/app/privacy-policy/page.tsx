@@ -1,3 +1,9 @@
 import type { Metadata } from "next";
-export const metadata: Metadata = { title: "Privacy policy" };
+import { createPageMetadata } from "@/lib/seo";
+export const metadata: Metadata = createPageMetadata({
+  title: "Privacy policy",
+  description: "Draft information about how Leon.Tech handles project enquiry details and personal information.",
+  path: "/privacy-policy",
+  robots: { index: false, follow: true },
+});
 export default function PrivacyPolicyPage() { return <main className="page-shell"><section className="page-hero"><div className="container"><p className="eyebrow">LEGAL · REVIEW REQUIRED BEFORE PRODUCTION</p><h1>Privacy policy</h1><p>Draft information about how Leon.Tech handles personal information.</p></div></section><section className="content-section"><article className="article-content"><div className="sample-disclaimer">This is draft legal content for implementation purposes, not legal advice. Review it for applicable Kenyan and international privacy requirements before publishing.</div><h2>Information you choose to share</h2><p>When you use the contact form, we ask for information such as your name, email address, and details about your project. We use that information to respond to your request and manage our business communications.</p><h2>How we use information</h2><p>We use inquiry details only to evaluate and respond to your request, communicate about a potential project, and maintain appropriate business records. We do not sell personal information.</p><h2>Retention and security</h2><p>Information is retained only for as long as reasonably needed for the stated business purpose and legal obligations. We use reasonable technical and organizational measures to protect it, though no internet service can guarantee absolute security.</p><h2>Your choices</h2><p>You may contact us to ask about, correct, or request deletion of information you have shared, subject to applicable legal requirements.</p><h2>Contact</h2><p>For privacy questions, use the contact form on this site. Add and verify the company’s privacy contact and data-retention process before launch.</p></article></section></main>; }

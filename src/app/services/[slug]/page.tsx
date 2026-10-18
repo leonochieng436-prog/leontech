@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Clock3, Code2, Layers3, ShieldCheck } from "lucide-react";
+import { JsonLd } from "@/components/json-ld";
 import { getPublicService, getPublicServices } from "@/lib/public-data";
+import { getServiceMetadata } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -15,20 +18,38 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const service = await getPublicService(slug);
   if (!service) return {};
-  return {
-    title: service.seoTitle || service.title,
-    description: service.seoDescription || service.summary,
-    alternates: service.seoCanonicalUrl ? { canonical: service.seoCanonicalUrl } : undefined,
-    openGraph: { title: service.seoTitle || service.title, description: service.seoDescription || service.summary },
-  };
+  return getServiceMetadata(service);
 }
 
 export default async function ServiceDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const service = await getPublicService(slug);
   if (!service) notFound();
+  const siteUrl = getSiteUrl();
+  const serviceUrl = new URL(`/services/${service.slug}`, siteUrl).toString();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    serviceType: service.title,
+    description: service.description,
+    url: serviceUrl,
+    provider: { "@id": `${siteUrl}#organization` },
+    areaServed: { "@type": "Country", name: "Kenya" },
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl.toString() },
+      { "@type": "ListItem", position: 2, name: "Services", item: new URL("/services", siteUrl).toString() },
+      { "@type": "ListItem", position: 3, name: service.title, item: serviceUrl },
+    ],
+  };
 
   return <main className="page-shell">
+    <JsonLd data={structuredData} />
+    <JsonLd data={breadcrumbs} />
     <section className="page-hero service-detail-hero">
       {service.coverImage && <div className="service-cover-image" style={{ backgroundImage: `linear-gradient(90deg, rgba(23,30,27,.92), rgba(23,30,27,.5)), url("${service.coverImage.replaceAll("\"", "%22")}")` }} role="img" aria-label={`${service.title} cover`} />}
       <div className="container service-detail-hero-content">
@@ -66,6 +87,6 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
       </div>
     </section>
 
-    <section className="service-detail-cta"><div className="container"><p className="eyebrow"><span className="eyebrow-dot" /> A CLEAR NEXT STEP</p><h2>Let’s talk about your<br /><span>{service.title.toLowerCase()} project.</span></h2><p>Share the context and the outcomes you have in mind. We’ll help define a sensible scope and provide a clear quotation.</p><Link className="button button-lime" href={`/contact?service=${encodeURIComponent(service.slug)}`}>Request a Quote <ArrowUpRight size={15} /></Link></div></section>
+    <section className="service-detail-cta"><div className="container"><p className="eyebrow"><span className="eyebrow-dot" /> A CLEAR NEXT STEP</p><h2>Let’s talk about your<br /><span>{service.title.toLowerCase()} project.</span></h2><p>Share the context and the outcomes you have in mind. We’ll help define a sensible scope and provide a clear quotation.</p><Link className="button button-lime" href={`/contact?service=${encodeURIComponent(service.slug)}`}>Request a Quote <ArrowUpRight size={15} /></Link><p><Link className="text-link" href="/pricing">Explore available packages <ArrowRight size={14} /></Link></p></div></section>
   </main>;
 }

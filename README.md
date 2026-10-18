@@ -11,6 +11,22 @@ Leon.Tech is a responsive marketing website and a small, database-backed busines
 - Admin overview, inquiry status management with an activity record, and service catalogue create/edit/publish/unpublish/archive/reorder management.
 - Robots, sitemap, page metadata, security headers, accessible mobile navigation, and a health endpoint.
 - Sample portfolio items are explicitly marked as concepts; no client names, testimonials, results, certifications, or business statistics are invented.
+- SEO metadata and canonicals target relevant Kenyan search intent. Organization, website, service, and breadcrumb JSON-LD use verified site and contact information; preview concepts and draft legal pages are kept out of indexable results.
+
+## SEO page targeting
+
+| Page | Main search intent |
+| --- | --- |
+| Home | Web development company Kenya; software development company Kenya |
+| Website development service | Website design and development Kenya; website developers Nairobi |
+| E-commerce service | E-commerce website development Kenya; M-Pesa website integration |
+| Custom software service | Custom software and web application development Kenya |
+| Business systems services | POS, inventory, ERP/CRM, school and hotel management systems Kenya |
+| Pricing | Website development cost Kenya; website packages and software project pricing |
+| Industry solutions | Retail, hospitality, education, professional services, healthcare administration, logistics, and startup software |
+| Contact | Web and software development enquiries in Kenya |
+
+These phrases are candidate themes rather than measured search-volume claims. Page-specific metadata and service keyword mapping are maintained in `src/lib/seo.ts`. Do not create near-duplicate city pages or add keyword meta tags.
 
 ## Requirements
 
@@ -121,6 +137,7 @@ npm run build
 3. Run migrations as a controlled deployment step with `npm run db:deploy`. Do not run `prisma migrate reset` against production.
 4. Bootstrap the first administrator once from a trusted environment with database access and the `ADMIN_*` values set, then remove those values.
 5. Build and deploy on Vercel. Verify `/api/health`, public routes, admin sign-in, and a test inquiry end-to-end.
+6. Verify the production HTTPS domain in Google Search Console using its recommended DNS or HTML method, then submit `https://<production-domain>/sitemap.xml`. Confirm the sitemap is processed and inspect important service URLs; request indexing only after their published content is complete. No Search Console ownership token is currently configured in this repository.
 
 All submitted inquiries and application state are stored in PostgreSQL. The current implementation does not upload media, so it has no local-filesystem upload persistence or object-storage credentials. Add an S3-compatible storage provider before introducing admin image-upload controls.
 

@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { getPublicServices } from "@/lib/public-data";
 import { ServiceBrowser } from "@/components/service-browser";
+import { createPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Services", description: "Web design, custom software, business systems, integrations, and ongoing technical support from Leon.Tech." };
+export const metadata: Metadata = createPageMetadata({
+  title: "Web & Software Development Services in Kenya",
+  description: "Explore website development, e-commerce, custom software, POS and inventory systems, mobile apps, integrations, and technical support in Kenya.",
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const services = await getPublicServices();

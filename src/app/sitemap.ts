@@ -1,18 +1,29 @@
 import type { MetadataRoute } from "next";
-import { articles, projects, services } from "@/lib/content";
+import { services, solutions } from "@/lib/content";
 import { getPublicArticles, getPublicProjects, getPublicServices } from "@/lib/public-data";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
-  const fixed = ["", "/about", "/services", "/solutions", "/portfolio", "/blog", "/contact", "/faq", "/privacy-policy", "/terms", "/cookies"];
+  const siteUrl = getSiteUrl();
+  const fixed = ["", "/about", "/services", "/solutions", "/pricing", "/contact", "/faq"];
   const [serviceItems, projectItems, articleItems] = process.env.DATABASE_URL
     ? await Promise.all([getPublicServices(), getPublicProjects(), getPublicArticles()])
-    : [services, projects, articles];
+    : [services, [], []];
   const dynamic = [
     ...serviceItems.map((item) => `/services/${item.slug}`),
     ...projectItems.map((item) => `/portfolio/${item.slug}`),
-    ...articleItems.map((item) => `/blog/${item.slug}`),
+    ...articleItems.filter((article) => article.content?.trim()).map((item) => `/blog/${item.slug}`),
   ];
-  return [...fixed, ...dynamic].map((path) => ({ url: `${base}${path}`, changeFrequency: path ? "monthly" : "weekly", priority: path ? 0.6 : 1 }));
+  const contentIndexPages = [
+    ...(projectItems.length ? ["/portfolio"] : []),
+    ...(articleItems.some((article) => article.content?.trim()) ? ["/blog"] : []),
+  ];
+  const solutionPages = solutions.map((solution) => `/solutions/${solution.slug}`);
+  const paths = [...fixed, ...contentIndexPages, ...solutionPages, ...dynamic];
+  return paths.map((path) => ({
+    url: new URL(path, siteUrl).toString(),
+    changeFrequency: path ? "monthly" : "weekly",
+    priority: path ? 0.6 : 1,
+  }));
 }
