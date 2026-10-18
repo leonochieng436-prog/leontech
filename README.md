@@ -102,8 +102,8 @@ See `.env.example` for the complete list.
 
 - `DATABASE_URL` — PostgreSQL runtime URL. Use the pooled Neon URL for serverless runtime traffic.
 - `AUTH_SECRET` — Auth.js secret, kept server-side.
-- `AUTH_URL` — canonical deployment origin used by Auth.js.
-- `NEXT_PUBLIC_APP_URL` — public origin for metadata and sitemap. Set this to the final HTTPS domain in production.
+- `AUTH_URL` — canonical deployment origin used by Auth.js. For the current Vercel deployment, set it to `https://leontech-one.vercel.app`.
+- `NEXT_PUBLIC_APP_URL` — public origin for metadata, canonical URLs, robots, and sitemap. For the current Vercel deployment, set it to `https://leontech-one.vercel.app`.
 
 ### Initial administrator, used only by the bootstrap command
 
@@ -133,10 +133,10 @@ npm run build
 ## Deployment (Vercel + PostgreSQL)
 
 1. Create the PostgreSQL project and configure `DATABASE_URL`.
-2. Configure `AUTH_SECRET`, `AUTH_URL`, `NEXT_PUBLIC_APP_URL`, and any optional email/WhatsApp variables in Vercel's server environment. Keep credentials unprefixed by `NEXT_PUBLIC_`.
+2. In Vercel, open **Project Settings → Environment Variables** and configure `AUTH_SECRET`, `AUTH_URL`, `NEXT_PUBLIC_APP_URL`, and any optional email/WhatsApp variables. Set both `AUTH_URL` and `NEXT_PUBLIC_APP_URL` to `https://leontech-one.vercel.app` for the current deployment, and keep credentials unprefixed by `NEXT_PUBLIC_`. Once a custom domain is connected, update both URL values to that domain and redeploy.
 3. Run migrations as a controlled deployment step with `npm run db:deploy`. Do not run `prisma migrate reset` against production.
 4. Bootstrap the first administrator once from a trusted environment with database access and the `ADMIN_*` values set, then remove those values.
-5. Build and deploy on Vercel. Verify `/api/health`, public routes, admin sign-in, and a test inquiry end-to-end.
+5. Build and deploy on Vercel. After changing environment variables, redeploy so the public URL is included in generated metadata. Verify `/api/health`, public routes, admin sign-in, and a test inquiry end-to-end.
 6. Verify the production HTTPS domain in Google Search Console using its recommended DNS or HTML method, then submit `https://<production-domain>/sitemap.xml`. Confirm the sitemap is processed and inspect important service URLs; request indexing only after their published content is complete. No Search Console ownership token is currently configured in this repository.
 
 All submitted inquiries and application state are stored in PostgreSQL. The current implementation does not upload media, so it has no local-filesystem upload persistence or object-storage credentials. Add an S3-compatible storage provider before introducing admin image-upload controls.

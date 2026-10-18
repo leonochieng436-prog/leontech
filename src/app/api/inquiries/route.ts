@@ -50,7 +50,11 @@ export async function POST(request: NextRequest) {
   if (origin) {
     const expectedOrigin = new URL(process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin).origin;
     const parsedOrigin = z.string().url().safeParse(origin);
-    if (!parsedOrigin.success || new URL(parsedOrigin.data).origin !== expectedOrigin) {
+    const isConfiguredOrigin = parsedOrigin.success && new URL(parsedOrigin.data).origin === expectedOrigin;
+    const isSameDevelopmentOrigin = process.env.NODE_ENV !== "production"
+      && parsedOrigin.success
+      && new URL(parsedOrigin.data).origin === request.nextUrl.origin;
+    if (!isConfiguredOrigin && !isSameDevelopmentOrigin) {
       return NextResponse.json({ error: "Cross-origin inquiry submission is not allowed." }, { status: 403 });
     }
   }
